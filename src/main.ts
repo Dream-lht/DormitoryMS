@@ -6,7 +6,6 @@ import rcities from '@/const/cities'
 
 // 组件
 import App from './App.vue'
-import SvgIcon from '@/components/SvgIcon.vue'
 import ElementPlus from 'element-plus'
 // 样式
 import '@/styles/tailwind.css'
@@ -24,6 +23,3 @@ app.config.globalProperties.$rcities = rcities
 app.use(ElementPlus)
 
 app.config.globalProperties.$api = api
-
-// 注册全局组件
-app.component('SvgIcon', SvgIcon)

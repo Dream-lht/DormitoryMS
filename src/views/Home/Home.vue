@@ -1,5 +1,7 @@
 <template>
-  <div class="h-screen w-screen"></div>
+  <div class="h-screen w-screen">
+    <svg-icon name="test"></svg-icon>
+  </div>
 </template>
 
 <script lang="ts">
@@ -9,20 +11,7 @@ import { defineComponent, reactive, toRefs } from 'vue'
 export default defineComponent({
   components: { SvgIcon },
   setup() {
-    const state = reactive({
-      ruleForm: {
-        username: '',
-        password: '',
-      },
-      rules: {
-        username: [
-          { required: 'true', message: '账户不能为空', trigger: 'blur' },
-        ],
-        password: [
-          { required: 'true', message: '密码不能为空', trigger: 'blur' },
-        ],
-      },
-    })
+    const state = reactive({})
     return {
       ...toRefs(state),
     }
