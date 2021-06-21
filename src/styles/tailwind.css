@@ -1,0 +1,14 @@
+/* ./src/index.css */
+/*! @import */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 自定义功能类 */
+@layer utilities {
+  /* 直接使用test类名即可 */
+  /* .test {
+    width: 100px;
+    height: 100px;
+  } */
+}
