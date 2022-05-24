@@ -1,12 +1,17 @@
 const routes = [
   {
     path: '/',
-    redirect: '/home',
+    redirect: '/main',
   },
   {
-    path: '/home',
-    name: 'home',
-    component: () => import('@/views/Home/Home.vue'),
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/Login/index.vue'),
+  },
+  {
+    path: '/main',
+    name: 'main',
+    component: () => import('@/views/Main/index.vue'),
   },
   // ! Not Found 路由置于底部
   {

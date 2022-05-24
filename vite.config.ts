@@ -4,6 +4,7 @@ import vue from '@vitejs/plugin-vue'
 import viteSvgIcons from 'vite-plugin-svg-icons'
 
 // https://vitejs.dev/config/
+// @ts-ignore
 export default defineConfig({
   plugins: [
     vue(),
@@ -21,5 +22,17 @@ export default defineConfig({
         replacement: path.resolve(__dirname, 'src'),
       },
     ],
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 8080,
+    https: false,
+    proxy: {
+      '/api': {
+        target: 'http://47.98.104.117/eop',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, ''),
+      },
+    },
   },
 })

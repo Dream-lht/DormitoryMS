@@ -1,51 +1,57 @@
-import axios, {
-  AxiosError,
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-} from 'axios'
-
-function decorateService(service: AxiosInstance) {
-  // 请求拦截
-  service.interceptors.request.use(
-    // 请求配置
-    (config: AxiosRequestConfig) => {
-      return config
-    },
-    (error: AxiosError) => {
-      // 做一些请求错误
-      Promise.reject(error)
-    }
-  )
-
-  // 响应拦截器
-  service.interceptors.response.use(
-    // 响应成功处理, 状态: 200
-    (response: AxiosResponse) => {
-      const result = response.data
-      return result
-    },
-    // 响应失败处理, 状态: !200
-    (error: AxiosError) => {
-      console.log(error.message)
-      return Promise.reject(error)
-    }
-  )
-}
-
-const servicesOptions = {
-  axiosSvc: {
-    timeout: 20000,
+import axios from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import { ElMessage } from 'element-plus'
+import { Cache } from '../cache'
+// 创建实例
+const request: AxiosInstance = axios.create({
+  baseURL: '/api',
+  timeout: 2000,
+  headers: {
+    'Content-Type': 'application/json;charset=UTF-8',
   },
-}
+})
+request.defaults.withCredentials = true
 
-function getServices(options: any) {
-  const res: any = {}
-  Object.keys(options).forEach(svcName => {
-    res[svcName] = axios.create(options[svcName])
-    decorateService(res[svcName])
-  })
-  return res
-}
+// 请求拦截
+request.interceptors.request.use(
+  (config: AxiosRequestConfig): AxiosRequestConfig => {
+    // 请求拦截
+    // 添加token
+    const cache = new Cache()
+    config.headers.sessionId = JSON.parse(cache.get('sessionId', 'session'))
+      ? JSON.parse(cache.get('sessionId', 'session'))
+      : ''
+    return config
+  },
+  (error: any) => {
+    return Promise.reject(error)
+  }
+)
+// 响应拦截
+request.interceptors.response.use(
+  (response: AxiosResponse) => {
+    const statusCode: number = response.data.code
 
-export default getServices(servicesOptions)
+    switch (statusCode) {
+      case 2000:
+        // 请求成功
+        break
+      case 3333:
+        // 登录失败
+        ElMessage({
+          type: 'warning',
+          message: '登录失败',
+        })
+        break
+      case 5000:
+        // 参数错误
+        break
+    }
+    return response
+  },
+  error => {
+    return Promise.reject(error)
+  }
+)
+
+export default request
