@@ -28,7 +28,7 @@ export class Cache {
     }
   }
 
-  removeAll(key: string, type: Type) {
+  removeAll(type: Type) {
     if (type === 'session') {
       window.sessionStorage.clear()
     } else {

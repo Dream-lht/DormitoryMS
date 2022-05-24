@@ -1,7 +1,7 @@
 const routes = [
   {
     path: '/',
-    redirect: '/main',
+    redirect: '/login',
   },
   {
     path: '/login',
@@ -13,15 +13,15 @@ const routes = [
     name: 'main',
     component: () => import('@/views/Main/index.vue'),
   },
+  {
+    path: '/:catchAll(.*)',
+    redirect: '/notfound',
+  },
   // ! Not Found 路由置于底部
   {
     path: '/notfound',
     name: 'notfound',
     component: () => import('@/views/NotFound/NotFound.vue'),
-  },
-  {
-    path: '/:catchAll(.*)',
-    redirect: '/notfound',
   },
 ]
 

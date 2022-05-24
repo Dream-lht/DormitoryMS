@@ -12,7 +12,7 @@ const router = createRouter({
 router.beforeEach(to => {
   if (to.path !== '/login') {
     // 如果路由不是去登录页面，则检查token是否存在，不存在就进行登录
-    if (cache.get('token', 'local')) {
+    if (cache.get('sessionId', 'session')) {
       return true
     } else {
       router.push('/login')

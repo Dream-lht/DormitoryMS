@@ -35,19 +35,24 @@ request.interceptors.response.use(
     switch (statusCode) {
       case 2000:
         // 请求成功
-        break
+        return response
       case 3333:
         // 登录失败
         ElMessage({
           type: 'warning',
           message: '登录失败',
         })
-        break
+        // eslint-disable-next-line prefer-promise-reject-errors
+        return Promise.reject()
       case 5000:
         // 参数错误
-        break
+        ElMessage({
+          type: 'warning',
+          message: '参数失败',
+        })
+        // eslint-disable-next-line prefer-promise-reject-errors
+        return Promise.reject()
     }
-    return response
   },
   error => {
     return Promise.reject(error)

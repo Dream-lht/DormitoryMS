@@ -22,7 +22,7 @@ export default defineComponent({
     const store = useStore()
 
     const logout = () => {
-      store.dispatch('logoutAction')
+      store.dispatch('login/logoutAction')
     }
     return {
       ArrowLeft,

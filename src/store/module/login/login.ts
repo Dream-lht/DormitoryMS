@@ -51,17 +51,19 @@ const loginModule: Module<ILoginState, IRootState> = {
   actions: {
     // 发送异步请求
     async getLoginAction({ commit, state, getters }, products: ILoginType) {
-      // 获取登录信息token
-      await login(products)
-
-      // 跳转到主页
-      router.push('/main')
+      try {
+        // 获取登录信息token
+        await login(products)
+        // 跳转到主页
+        router.push('/main')
+      } catch (err) {}
     },
 
     // 登出
     async logoutAction() {
       await logout()
       router.push('login')
+      cache.removeAll('session')
     },
     // 获取验证码图片
     async getCaptchaAction({ commit }) {
