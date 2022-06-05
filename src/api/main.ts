@@ -59,3 +59,12 @@ export function removeStudentBySid(sid: string | number) {
     method: 'DELETE',
   })
 }
+
+//添加学生信息
+export function createStudentInfo(data: IStudentData) {
+  return request({
+    url: '/student',
+    data: data,
+    method: 'post',
+  })
+}

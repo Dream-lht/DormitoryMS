@@ -9,6 +9,7 @@ import {
   IStudentData,
   updataStudentInfo,
   removeStudentBySid,
+  createStudentInfo
 } from '@/api/main'
 import { Cache } from '@/utils/cache'
 const cache = new Cache()
@@ -63,6 +64,8 @@ const main: Module<IMainState, IRootState> = {
       state.buildInfo.build = buildInfo.build
       state.buildInfo.floor = buildInfo.floor
     },
+
+    
   },
   actions: {
     // 获取所有的楼栋信息
@@ -114,6 +117,16 @@ const main: Module<IMainState, IRootState> = {
       await removeStudentBySid(sid)
       this.dispatch('getRoomsAction', getters.getBuild)
     },
+
+    //添加学生信息
+    async createStudentAction({ getters }, data: IStudentData) {
+      try {
+        await createStudentInfo(data)
+        this.dispatch('getRoomsAction', getters.getBuild)
+      } catch (err) {
+        console.log('添加失败')
+      }
+    }
   },
 }
 

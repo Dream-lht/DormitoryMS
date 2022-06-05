@@ -8,6 +8,8 @@ import formatBuild from '@/utils/formatBuild'
 const store = useStore()
 // 控制弹出框
 const dialogVisible = ref<boolean>(false)
+//控制弹出框title
+let title = ref<String>("")
 // 学生信息
 const studentInfo = ref<IStudent>({
   bedRoomId: '',
@@ -21,14 +23,30 @@ const studentInfo = ref<IStudent>({
 })
 // 格式化级联数据
 const formatBuilds = ref([])
-//
+
 // 宿舍信息
 const rooms = computed(() => store.getters.getRoomsInfo)
+
 // 楼栋信息
 const builds = computed(() => store.getters.getBuildInfo)
 
 const handleClose = () => {
   console.log('被关闭了')
+}
+
+//提示选择楼层
+const selectFloor = () =>{
+ const build = store.getters.getBuild
+ if(build.build){
+    return true
+ }else{
+   ElMessage({
+        type: 'warning',
+        message: '请先选择楼栋',
+      })
+      return false
+ }
+ 
 }
 
 /**
@@ -37,23 +55,49 @@ const handleClose = () => {
  * @param scope 子表行数据
  */
 const handleUpdataToStudent = (row: any, scope: any) => {
+  
+  if(!selectFloor()) {return}
+  
+  //控制对话框标题
+  title.value = "修改"
   // 打开对话框
   dialogVisible.value = true
   // 获取学生信息
   studentInfo.value = { ...row, ...scope }
+  
   studentInfo.value.buildInfo = [
     studentInfo.value.build,
     studentInfo.value.floor,
     studentInfo.value.bedRoomId,
   ]
+
   // 格式化级联列表
   formatBuild(builds.value, '', formatBuilds.value)
 }
-// const handleUpdataToRoom = () => {
-//   dialogVisible.value = true
-// }
+
+const handleCreateToStudent = (row) => {
+  if(!selectFloor()) {return}
+  //控制对话框标题
+  title.value = "添加学生"
+  // 打开对话框
+  dialogVisible.value = true
+ //
+ 
+ studentInfo.value.buildInfo = [
+    row.row.build,
+    row.row.floor,
+    row.row.bedRoomId,
+  ]
+
+  // 格式化级联列表
+  formatBuild(builds.value, '', formatBuilds.value)
+ 
+ 
+}
+
 
 const handleRemoveToStudent = (row: any, scope: any) => {
+  if(!selectFloor()) {return}
   ElMessageBox.confirm('确定删除吗？', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -69,17 +113,47 @@ const handleRemoveToStudent = (row: any, scope: any) => {
     })
     .catch(() => {})
 }
-// const handleRemoveToName = () => {}
 
+//点击对话框确认按钮
 const submit = () => {
   dialogVisible.value = false
-  studentInfo.value.bedRoomId = studentInfo.value.buildInfo[2]
-  store.dispatch('updataStudentAction', studentInfo.value).then(() => {
+  
+if(title.value === "修改"){
+  
+    studentInfo.value.bedRoomId = studentInfo.value.buildInfo[2]
+    store.dispatch('updataStudentAction', studentInfo.value).then(() => {
     ElMessage({
       type: 'success',
       message: '修改成功',
     })
   })
+  
+}else if(title.value === "添加学生"){
+  
+    studentInfo.value.bedRoomId = studentInfo.value.buildInfo[2]
+    store.dispatch('createStudentAction', studentInfo.value).then(() => {
+    ElMessage({
+      type: 'success',
+      message: '添加成功',
+    })
+  })
+  
+} 
+
+//清除原信息
+studentInfo.value.studentId = ""
+  studentInfo.value.studentName = ""
+  formatBuilds.value = []
+}
+
+//点击对话框取消按钮
+const cancle = () =>{
+  //清空原信息
+  studentInfo.value.studentId = ""
+  studentInfo.value.studentName = ""
+  formatBuilds.value = []
+  //隐藏对话框
+   dialogVisible.value = false
 }
 </script>
 
@@ -117,15 +191,24 @@ const submit = () => {
       <el-table-column label="楼栋" prop="build" />
       <el-table-column label="层数" prop="floor" />
       <el-table-column label="寝室号" prop="room" />
-      <el-table-column label="人数" prop="" />
+      <el-table-column label="人数" prop="students.length" />
+       <el-table-column label="操作">
+         <template #default="scope">
+                <el-button
+                  size="small"
+                  :disabled="scope.row.students.length < 6 ? false : true"
+                  @click="handleCreateToStudent(scope)"
+                  >添加学生</el-button
+                >
+              </template>
+       </el-table-column>
     </el-table>
     <el-dialog
       v-model="dialogVisible"
-      title="修改"
+      :title="title"
       width="30%"
-      :before-close="handleClose"
     >
-      <el-form :inline="true" :model="studentInfo" class="demo-form-inline">
+        <el-form :inline="true" :model="studentInfo" class="demo-form-inline">
         <el-form-item label="姓名">
           <el-input v-model="studentInfo.studentName" placeholder="姓名" />
         </el-form-item>
@@ -141,7 +224,7 @@ const submit = () => {
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button @click="cancle">取消</el-button>
           <el-button type="primary" @click="submit">确定</el-button>
         </span>
       </template>
